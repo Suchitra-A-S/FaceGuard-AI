@@ -1,4 +1,3 @@
-
 import os
 import json
 import base64
@@ -32,6 +31,7 @@ def get_db():
 
 
 def init_db():
+    """Create database tables if they do not already exist."""
     with get_db() as conn:
         conn.execute("""
             CREATE TABLE IF NOT EXISTS users (
@@ -53,6 +53,12 @@ def init_db():
                 FOREIGN KEY(user_id) REFERENCES users(id)
             )
         """)
+
+
+# IMPORTANT:
+# Initialize tables when the app module loads.
+# This runs with both Flask locally and Gunicorn on Render.
+init_db()
 
 
 def log_event(user_id, event):
@@ -249,14 +255,13 @@ def verify_face():
         )
 
         # Demonstration threshold only.
-        # Must be validated before real-world use.
+        # Validate accuracy and spoof resistance before real-world use.
         threshold = 0.48
 
         if distance < threshold:
             session.clear()
             session["uid"] = user_id
             session["face_verified"] = True
-
 
             log_event(user_id, "Face verification successful")
 
@@ -331,8 +336,6 @@ def logout():
 # ---------------- RUN APP ----------------
 
 if __name__ == "__main__":
-    init_db()
-
-    # Local development only.
-    # Never use Flask debug mode on a public deployment.
+    # Tables are already initialized above.
+    # Local development only; do not enable debug on public deployment.
     app.run(debug=True)
