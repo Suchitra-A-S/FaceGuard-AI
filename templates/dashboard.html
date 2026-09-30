@@ -1,0 +1,159 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+<section class="dash">
+
+    <div class="dash-head">
+        <div>
+            <div class="eyebrow">✦ YOUR PRIVATE CORNER</div>
+            <h1>
+                Hey, {{ user.name.split()[0] }}
+                <span class="wave">✌️</span>
+            </h1>
+            <p class="muted">
+                Your digital space is looking good today.
+            </p>
+        </div>
+
+        <form action="{{ url_for('logout') }}" method="POST">
+            <button class="secondary" type="submit">
+                Log out ↗
+            </button>
+        </form>
+    </div>
+
+    <!-- Welcome banner -->
+    <div class="welcome">
+        <div>
+            <span class="pill">✦ FACEGUARD ACTIVE</span>
+
+            <h2>
+                Good to see you,<br>
+                {{ user.name }}!
+            </h2>
+
+            <p>
+                Your password and face check have both been
+                completed for this session.
+            </p>
+
+            <span class="welcome-link">
+                Your space, secured ✨
+            </span>
+        </div>
+
+        <div class="welcome-art">
+            <div class="shield">✓</div>
+            <span class="float f1">✦</span>
+            <span class="float f2">✧</span>
+            <span class="float f3">♡</span>
+        </div>
+    </div>
+
+    <!-- Statistics -->
+    <div class="stats">
+
+        <article class="stat">
+            <div class="stat-icon lilac">◉</div>
+            <span class="stat-label">Account status</span>
+            <strong>Protected</strong>
+            <small>
+                <i class="live"></i>
+                Session verified
+            </small>
+        </article>
+
+        <article class="stat">
+            <div class="stat-icon peach">✧</div>
+            <span class="stat-label">Security events</span>
+            <strong>{{ total }}</strong>
+            <small>Recorded for this account</small>
+        </article>
+
+        <article class="stat">
+            <div class="stat-icon mint">◎</div>
+            <span class="stat-label">Face sign-in</span>
+            <strong>Enabled</strong>
+            <small>Demo similarity matching</small>
+        </article>
+
+    </div>
+
+    <!-- Activity and Google Photos -->
+    <div class="dash-grid">
+
+        <article class="card activity">
+            <div class="card-head">
+                <div>
+                    <h3>Recent activity</h3>
+                    <p class="muted">
+                        A little timeline of your account.
+                    </p>
+                </div>
+
+                <span class="mini-pill">ACTIVITY LOG</span>
+            </div>
+
+            {% for event in events %}
+            <div class="event">
+                <span class="event-dot"></span>
+
+                <div>
+                    <strong>{{ event.event }}</strong>
+                    <small>{{ event.created_at }}</small>
+                </div>
+            </div>
+            {% else %}
+            <p class="muted">No activity yet.</p>
+            {% endfor %}
+        </article>
+
+        <article class="card photos">
+            <div class="card-head">
+                <div>
+                    <h3>Google Photos</h3>
+                    <p class="muted">
+                        Your memories, one click away.
+                    </p>
+                </div>
+
+                <span class="photo-mark">✿</span>
+            </div>
+
+            <div class="photo-preview">
+                <span>✦</span>
+                <span>♡</span>
+                <span>✧</span>
+            </div>
+
+            <p class="muted small">
+                Connect your Google account to explore
+                a future Photos integration.
+            </p>
+
+            <a
+                class="primary full button-link"
+                href="https://photos.google.com/"
+                target="_blank"
+                rel="noopener">
+                Open Google Photos ↗
+            </a>
+
+            <p class="fine">
+                Demo link only — this application does not
+                currently connect to or access your Google account.
+            </p>
+        </article>
+
+    </div>
+
+    <p class="disclaimer">
+        Educational demo only. Face templates are stored in a
+        local SQLite database without encryption. Do not deploy
+        publicly or use real biometric data until appropriate
+        security protections have been implemented.
+    </p>
+
+</section>
+{% endblock %}

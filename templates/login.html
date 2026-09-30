@@ -1,0 +1,84 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+<section class="auth-layout">
+
+    <div class="intro">
+        <div class="eyebrow">✧ A LITTLE MORE PEACE OF MIND</div>
+
+        <h1>
+            Your face.<br>
+            <em>Your space.</em>
+        </h1>
+
+        <p>
+            Sign in with your password, then verify your face
+            to enter your personal security dashboard.
+        </p>
+
+        <div class="orb">
+            <div class="face-icon">☺</div>
+            <span class="orbit o1"></span>
+            <span class="orbit o2"></span>
+            <span class="spark s1">✦</span>
+            <span class="spark s2">✧</span>
+        </div>
+
+        <div class="trust">
+            <span>🔒</span>
+            Designed for privacy-first access
+        </div>
+    </div>
+
+    <div class="panel">
+        <div class="panel-icon">✦</div>
+
+        <h2>Welcome back!</h2>
+        <p class="muted">
+            Your secure space is just a moment away.
+        </p>
+
+        <form method="POST" action="{{ url_for('login') }}">
+            <label for="email">Email address</label>
+            <input
+                id="email"
+                name="email"
+                type="email"
+                placeholder="you@example.com"
+                autocomplete="username"
+                required
+            >
+
+            <label for="password">Password</label>
+            <input
+                id="password"
+                name="password"
+                type="password"
+                placeholder="Enter your password"
+                autocomplete="current-password"
+                required
+            >
+
+            <button class="primary full" type="submit">
+                Continue <span>→</span>
+            </button>
+        </form>
+
+        <div class="or">
+            <span></span>
+            NEW HERE?
+            <span></span>
+        </div>
+
+        <a class="secondary full" href="{{ url_for('register') }}">
+            Create your account <span>↗</span>
+        </a>
+
+        <p class="fine">
+            Face verification is required after password sign-in.
+        </p>
+    </div>
+
+</section>
+{% endblock %}

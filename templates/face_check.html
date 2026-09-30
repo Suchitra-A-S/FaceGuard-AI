@@ -1,0 +1,341 @@
+
+{% extends "base.html" %}
+
+{% block title %}Face Verification | FaceGuard AI{% endblock %}
+
+{% block content %}
+<section class="verify-page">
+    <div class="verify-card">
+
+        <div class="verify-icon">🔐</div>
+
+        <h1>Face Verification</h1>
+        <p class="verify-subtitle">
+            Let's make sure it's you. Look at the camera
+            and verify your identity.
+        </p>
+
+        <div class="user-email">
+            <span>✉️</span>
+            <span>{{ email }}</span>
+        </div>
+
+        <div class="camera-box">
+            <video id="video" autoplay playsinline muted></video>
+            <div id="cameraHint" class="camera-hint">
+                📷 Camera preview will appear here
+            </div>
+        </div>
+
+        <div class="camera-actions">
+            <button type="button" id="startCamera" class="btn btn-secondary">
+                Start Camera
+            </button>
+
+            <button type="button" id="verifyFace" class="btn btn-primary">
+                Verify My Face
+            </button>
+        </div>
+
+        <p id="cameraStatus" class="camera-status" aria-live="polite">
+            Start your camera to begin verification.
+        </p>
+
+        <!-- Verification result -->
+        <div id="verificationStatus"
+             class="verify-result"
+             role="status"
+             aria-live="assertive"
+             hidden>
+
+            <div id="verifyIcon" class="result-icon">⚠️</div>
+
+            <h2 id="verifyTitle">Face did not match!</h2>
+
+            <p id="verifyMessage">
+                Please try again. Make sure your face is clearly visible,
+                well-lit, and positioned in front of the camera.
+            </p>
+        </div>
+
+        <a class="cancel-link" href="{{ url_for('login') }}">
+            ← Cancel and return to login
+        </a>
+
+    </div>
+</section>
+
+<style>
+.verify-page {
+    min-height: 75vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 35px 16px;
+    background: linear-gradient(135deg, #fff5fa, #f1f5ff, #fdf0f8);
+}
+
+.verify-card {
+    width: 100%;
+    max-width: 540px;
+    padding: 35px;
+    border-radius: 28px;
+    background: #ffffff;
+    text-align: center;
+    box-shadow: 0 15px 45px rgba(153, 94, 143, 0.13);
+    border: 1px solid #f5e3f0;
+}
+
+.verify-icon {
+    width: 68px;
+    height: 68px;
+    margin: 0 auto 15px;
+    display: grid;
+    place-items: center;
+    border-radius: 22px;
+    background: #fce7f3;
+    font-size: 32px;
+}
+
+.verify-card h1 {
+    color: #442d55;
+    font-size: 30px;
+    font-weight: 800;
+    margin: 0 0 10px;
+}
+
+.verify-subtitle {
+    color: #81738b;
+    font-size: 15px;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.user-email {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    max-width: 100%;
+    padding: 10px 16px;
+    margin-bottom: 22px;
+    border-radius: 30px;
+    background: #f8f1fb;
+    color: #725180;
+    font-size: 14px;
+    overflow-wrap: anywhere;
+}
+
+.camera-box {
+    position: relative;
+    width: 100%;
+    max-width: 390px;
+    aspect-ratio: 4 / 3;
+    margin: 0 auto 20px;
+    overflow: hidden;
+    border-radius: 22px;
+    background: #f4edf8;
+    border: 2px dashed #d9b9dc;
+}
+
+.camera-box video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transform: scaleX(-1);
+}
+
+.camera-hint {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 15px;
+    color: #806d8b;
+    font-size: 15px;
+    pointer-events: none;
+}
+
+.camera-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 18px;
+}
+
+.btn {
+    border: 0;
+    border-radius: 14px;
+    padding: 13px 20px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 7px 18px rgba(130, 76, 143, 0.16);
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn-primary {
+    color: #ffffff;
+    background: linear-gradient(135deg, #d65ca4, #a76de0);
+}
+
+.btn-secondary {
+    color: #704c88;
+    background: #f4eafa;
+    border: 1px solid #e5d2f0;
+}
+
+.camera-status {
+    min-height: 24px;
+    margin: 17px 0;
+    color: #796985;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* Verification result panel */
+.verify-result {
+    margin: 22px 0 12px;
+    padding: 25px 20px;
+    border-radius: 20px;
+    text-align: center;
+    animation: resultPop 0.35s ease-out;
+}
+
+.verify-result[hidden] {
+    display: none;
+}
+
+.verify-result.error {
+    background: #fff0f1;
+    border: 2px solid #f04462;
+    box-shadow: 0 8px 24px rgba(240, 68, 98, 0.12);
+}
+
+.verify-result.success {
+    background: #eafbf1;
+    border: 2px solid #35b879;
+}
+
+.verify-result.pending {
+    background: #fff8e8;
+    border: 2px solid #e9b949;
+}
+
+.result-icon {
+    font-size: 38px;
+    margin-bottom: 8px;
+}
+
+.verify-result h2 {
+    margin: 0 0 12px;
+    font-size: 28px;
+    font-weight: 800;
+    line-height: 1.3;
+}
+
+.verify-result.error h2 {
+    color: #c91f42;
+}
+
+.verify-result.success h2 {
+    color: #18794e;
+}
+
+.verify-result.pending h2 {
+    color: #986515;
+}
+
+.verify-result p {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.6;
+}
+
+.verify-result.error p {
+    color: #92213b;
+}
+
+.verify-result.success p {
+    color: #246b4c;
+}
+
+.verify-result.pending p {
+    color: #805d22;
+}
+
+.cancel-link {
+    display: inline-block;
+    margin-top: 20px;
+    color: #a83275;
+    font-size: 16px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.cancel-link:hover {
+    color: #78245b;
+    text-decoration: underline;
+}
+
+@keyframes resultPop {
+    from {
+        opacity: 0;
+        transform: scale(0.96);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@media (max-width: 480px) {
+    .verify-card {
+        padding: 24px 17px;
+    }
+
+    .verify-card h1 {
+        font-size: 25px;
+    }
+
+    .verify-result h2 {
+        font-size: 24px;
+    }
+
+    .verify-result p {
+        font-size: 16px;
+    }
+
+    .camera-actions {
+        flex-direction: column;
+    }
+
+    .camera-actions .btn {
+        width: 100%;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .verify-result {
+        animation: none;
+    }
+
+    .btn {
+        transition: none;
+    }
+}
+</style>
+{% endblock %}
